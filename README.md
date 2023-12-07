@@ -1,4 +1,4 @@
-[](https://github.com/b0n21en5/board-app/blob/main/white-board.gif.gif)
+![](https://github.com/b0n21en5/board-app/blob/main/white-board.gif)
 
 
 Following fixes made:
