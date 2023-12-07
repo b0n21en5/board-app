@@ -3,6 +3,7 @@ import { Rect, Text, Group, Transformer, Circle } from "react-konva";
 import { Html } from "react-konva-utils";
 import { EditableText } from "./EditableText";
 import StickyPopup from "./StickyPopup";
+import EmojiContainer from "./EmojiContainer";
 
 const Sticky = ({
   x,
@@ -21,7 +22,9 @@ const Sticky = ({
   shape,
   onSelectText,
   onBorderChange,
-  fontFamily
+  onSquareSizeChange,
+  setShape,
+  onShapeChange,
 }) => {
   const shapeRef = useRef(null);
   const textRef = useRef(null);
@@ -32,9 +35,10 @@ const Sticky = ({
   const [editingText, setEditingText] = useState(true);
   const [stickyColor, setStickyColor] = useState(color);
   const [textWriting, setTextWriting] = useState(false);
-  const [textAlign, setTextAlign] = useState("left");
+  const [textAlign, setTextAlign] = useState("center");
   const [fontfamily, setFontfamily] = useState("Arial");
-  const [textUnderline,setTextUnderline]=useState(false)
+  const [textUnderline, setTextUnderline] = useState(false);
+  const [textColor, setTextColor] = useState("#000");
   const [italic, setItalic] = useState(false);
   const [fontWeight, setFontWeight] = useState(false);
   const [stickyStyle, setStickyStyle] = useState({
@@ -43,13 +47,13 @@ const Sticky = ({
     fontStyle: "normal",
     // align: "center"
   });
+  const [emojis, setEmojis] = useState([]);
 
   const handleTextAlignChange = (align) => {
-    console.log(align);
     setTextAlign(align);
   };
   const handleFontFamily = (family) => {
-   setFontfamily(family)
+    setFontfamily(family);
   };
   const handleBorderChange = () => {
     setStickyStyle((prevStyle) => ({
@@ -60,24 +64,31 @@ const Sticky = ({
   };
 
   const handleItalicChange = () => {
-    // setStickyStyle((prevStyle) => ({
-    //   ...prevStyle,
-    //   fontStyle: prevStyle.fontStyle === "italic" ? "normal" : "italic",
-    // }));
     setItalic(!italic);
   };
 
   const handleIncreaseFontSize = () => {
-    setFontSize((prevFontSize) => prevFontSize + 2);
+    setFontSize((prevFontSize) => Math.min(prevFontSize + 2, 24));
   };
 
   const handleDecreaseFontSize = () => {
     setFontSize((prevFontSize) => Math.max(prevFontSize - 2, 10));
   };
-  const handleFontWightChange = () => {
+
+  const handleFontWeightChange = () => {
     setFontWeight(!fontWeight);
   };
   let timer;
+
+  const onEmojiClick = (event) => {
+    setEmojis((prevEmojis) => [...prevEmojis, event]);
+  };
+
+  const onEmojiRemove = (emojiObject) => {
+    setEmojis((prevEmojis) =>
+      prevEmojis.filter((emoji) => emoji.unified !== emojiObject.unified)
+    );
+  };
 
   useEffect(() => {
     if (isSelected) {
@@ -106,6 +117,10 @@ const Sticky = ({
     setTextWriting(!textWriting);
   }
 
+  const handleTextColorChange = (color) => {
+    setTextColor(color);
+  };
+
   return (
     <>
       <Group>
@@ -132,6 +147,7 @@ const Sticky = ({
             y={y + height / 2} // Set the y-coordinate to the center of the circle
             radius={width / 2} // Set the radius of the circle
             fill={stickyColor}
+            height={height}
             stroke="#999966"
             strokeWidth={4}
             draggable={draggable}
@@ -166,7 +182,7 @@ const Sticky = ({
           // text={text}
           fontFamily="Calibri"
           fontSize={fontSize}
-          fill="#333333"
+          fill={textColor}
           verticalAlign="middle"
           align={textAlign}
           // fontStyle="bold"
@@ -180,40 +196,54 @@ const Sticky = ({
         {isText && (
           <StickyPopup
             x={x}
-            y={y-80} // Adjust the y position to show above the rectangle
+            y={y - 80} // Adjust the y position to show above the rectangle
             // onClose={handlePopupClose}
             onColorChange={colorChange}
             handleText={handleText}
+            onDelete={onDelete}
             onDecreaseFontSize={handleDecreaseFontSize}
             onIncreaseFontSize={handleIncreaseFontSize}
+            shape={shape}
+            setShape={setShape}
+            setFontSize={setFontSize}
             onBorderChange={handleBorderChange}
             onItalicChange={handleItalicChange}
             onTextAlignChange={handleTextAlignChange}
-            onFontWeight={handleFontWightChange}
-            fontFamily={handleFontFamily}
-            onTextDecoration={()=>setTextUnderline(!textUnderline)}
-          />
-        )}
-        {textWriting && (
-          <EditableText
-            ref={inputRef}
-            x={x + 8}
-            y={y + 8}
-            text={text}
-            width={width}
-            height={height}
-            isEditing={textWriting}
-            onChange={onChange}
-            fontSize={fontSize}
-            italic={italic}
+            onFontWeight={handleFontWeightChange}
+            fontfamily={fontfamily}
             textAlign={textAlign}
-            fontWeight={fontWeight}
-            fontFamily={fontfamily}
-            onTextDecoration={textUnderline}
-
-            // onKeyDown={()=>setEditingText(false)}
+            onFontFamilyChange={handleFontFamily}
+            fontSize={fontSize}
+            onTextDecoration={() => setTextUnderline(!textUnderline)}
+            onEmojiClick={onEmojiClick}
+            onShapeChange={onShapeChange}
+            stickyColor={stickyColor}
+            onSquareSizeChange={onSquareSizeChange}
+            textColor={textColor}
+            onTextColorChange={handleTextColorChange}
           />
         )}
+        <EditableText
+          ref={inputRef}
+          x={x + 8}
+          y={y + 8}
+          text={text}
+          width={width}
+          height={height}
+          isEditing={textWriting}
+          onChange={onChange}
+          fontSize={fontSize}
+          italic={italic}
+          textAlign={textAlign}
+          fontWeight={fontWeight}
+          fontFamily={fontfamily}
+          textDecoration={textUnderline}
+          onTextDecoration={textUnderline}
+          emojis={emojis}
+          textColor={textColor}
+
+          // onKeyDown={()=>setEditingText(false)}
+        />
 
         <Group
           x={x + width - 35}
@@ -251,6 +281,16 @@ const Sticky = ({
             }
             return newBox;
           }}
+        />
+      )}
+      {shape === "Rectangle" && (
+        <EmojiContainer
+          emojis={emojis}
+          fontSize={fontSize}
+          x={x}
+          y={y}
+          height={height}
+          onEmojiRemove={onEmojiRemove}
         />
       )}
     </>

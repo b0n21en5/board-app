@@ -9,7 +9,8 @@ function getStyle(
   textAlign,
   fontWeight,
   fontFamily,
-  textDecoration
+  textDecoration,
+  textColor
 ) {
   const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
   const baseStyle = {
@@ -20,9 +21,9 @@ function getStyle(
     margin: "5px",
     background: "none",
     outline: "none",
-    textDecoration:textDecoration?"underline":"none",
+    textDecoration: textDecoration ? "underline" : "none",
 
-    color: "black",
+    color: { textColor },
     fontSize: `${fontSize}px`,
 
     fontFamily: fontFamily,
@@ -56,7 +57,8 @@ export function EditableTextInput({
   textAlign,
   fontWeight,
   fontFamily,
-  textDecoration
+  textDecoration,
+  textColor,
 }) {
   const style = getStyle(
     width,
