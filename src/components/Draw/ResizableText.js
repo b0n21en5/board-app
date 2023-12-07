@@ -10,6 +10,12 @@ export function ResizableText({
   onResize,
   onClick,
   onDoubleClick,
+  fontFamily,
+  fontStyle,
+  fontSize,
+  textAlign,
+  textDecoration,
+  textColor
 }) {
   const textRef = useRef(null);
   const transformerRef = useRef(null);
@@ -24,7 +30,7 @@ export function ResizableText({
   function handleResize() {
     if (textRef.current !== null) {
       const textNode = textRef.current;
-      const newWidth = textNode.width() * textNode.scaleX();
+      const newWidth = textNode.width() * textNode.scaleX()-10;
       const newHeight = textNode.height() * textNode.scaleY();
       textNode.setAttrs({
         width: newWidth,
@@ -47,25 +53,32 @@ export function ResizableText({
     />
   ) : null;
 
+  const verticalAlign='middle'
+
   return (
-    <>
+    <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
       <Text
         x={x}
         y={y}
         ref={textRef}
         text={text}
-        fill="black"
-        fontFamily="sans-serif"
-        fontSize={24}
+        fill={textColor}
+        fontFamily={fontFamily}
+        fontStyle={fontStyle?"italic":"normal"}
+        fontSize={fontSize}
+        textDecoration={textDecoration?"underline":"none"}
+        align={textAlign}
+        verticalAlign={verticalAlign}
+        offsetY={(verticalAlign === 'middle' ? -1 : verticalAlign === 'top' ? 1 : 0) * 60}
         perfectDrawEnabled={false}
         onTransform={handleResize}
         onClick={onClick}
         onTap={onClick}
         onDblClick={onDoubleClick}
         onDblTap={onDoubleClick}
-        width={width}
+        width={width-10}
       />
       {transformer}
-    </>
+    </div>
   );
 }

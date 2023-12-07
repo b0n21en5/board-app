@@ -132,6 +132,8 @@ const DrawingArea = () => {
     setArrowColor,
   } = useArrow();
 
+
+  const [clickCount, setClickCount] = useState(0);
   const [scale, setScale] = useState(1);
   const [cardTransform, setCardTransform] = useState(false);
   const handleCardTransform = () => {
@@ -607,6 +609,28 @@ const DrawingArea = () => {
     // setNotes(res)
   };
 
+  const handleShapeChange = (index, newShape, width, height) => {
+    const updatedNotes = [...notes];
+    updatedNotes[index].shape = newShape;
+    updatedNotes[index].width = width;
+    updatedNotes[index].height = height;
+    setNotes(updatedNotes);
+  };
+
+  const onSquareSizeChange = (index, width, height) => {
+    const updatedNotes = [...notes];
+    updatedNotes[index].width = width;
+    updatedNotes[index].height = height;
+    setNotes(updatedNotes);
+  };
+
+  const handleAddStickyPage = () => {
+    if (clickCount === 1 && selectedColor) {
+      handleAddNote(200, 300, "Rectangle");
+      setClickCount(0);
+    }
+  };
+
   return (
     <>
       <div
@@ -654,7 +678,10 @@ const DrawingArea = () => {
               <OverlayTrigger
                 trigger="click"
                 placement="right"
-                overlay={CustomPopover({ handleColorChange, setSelectedTool })}
+                overlay={CustomPopover({
+                  handleColorChange,
+                  setSelectedTool,
+                })}
                 rootClose={true}
               >
                 <div
@@ -669,8 +696,11 @@ const DrawingArea = () => {
                 trigger="click"
                 placement="right"
                 overlay={CustomStickyPopover({
+                  selectedColor,
                   setSelectedColor,
                   handleAddNote,
+                  clickCount,
+                  setClickCount,
                 })}
                 rootClose={true}
               >
@@ -689,7 +719,6 @@ const DrawingArea = () => {
                 <BsEraser size={20} color="blue" />
               </div>
 
-             
               <div
                 variant="light"
                 onClick={() => setSelectedTool("brush")}
@@ -774,6 +803,7 @@ const DrawingArea = () => {
             onMouseDown={handleMouseDown}
             onMousemove={handleMouseMove}
             onMouseup={handleMouseUp}
+            onClick={handleAddStickyPage}
             className="canvas-stage"
             ref={stageRef}
             scaleX={scale}
@@ -864,6 +894,10 @@ const DrawingArea = () => {
                     setNotes(updatedNotes);
                   }}
                   shape={note.shape} // Pass the shape as a prop
+                  setShape={setShape}
+                  onShapeChange={(newShape, width, height) =>
+                    handleShapeChange(index, newShape, width, height)
+                  }
                   // isSelected={true}
                   isSelected={index === selectedIndex}
                   isText={index === selectedTextIndex} // Set isSelected to true for the specific index
@@ -871,6 +905,10 @@ const DrawingArea = () => {
                   onSelectText={() => handleNoteSelectText(index)}
                   onChange={(newText) => handleNoteChange(index, newText)}
                   onDelete={() => handleNoteDelete(index)}
+                  selectedColor={selectedColor}
+                  onSquareSizeChange={(width, height) =>
+                    onSquareSizeChange(index, width, height)
+                  }
                 />
               ))}
 

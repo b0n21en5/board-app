@@ -22,12 +22,15 @@ export function EditableText({
   italic,
   textAlign,
   fontWeight,
-  fontFamily,onTextDecoration
+  fontFamily,
+  textDecoration,
+  onTextDecoration,
+  textColor
 }) {
   if (isEditing) {
     return (
       <EditableTextInput
-        x={x + 10}
+        x={x - 10}
         y={y + 20}
         width={width}
         height={height}
@@ -39,6 +42,7 @@ export function EditableText({
         fontWeight={fontWeight}
         fontFamily={fontFamily}
         textDecoration={onTextDecoration}
+        textColor={textColor}
         // onKeyDown={onKeyDown}
       />
     );
@@ -47,12 +51,19 @@ export function EditableText({
     <ResizableText
       x={x}
       y={y}
+      fontFamily={fontFamily}
+      fontStyle={italic}
+      fontSize={fontSize}
+      textAlign={textAlign}
       isSelected={isTransforming}
       onClick={onToggleTransform}
       onDoubleClick={onToggleEdit}
+      textDecoration={textDecoration}
       onResize={onResize}
       text={text}
       width={width}
+      height={height}
+      textColor={textColor}
     />
   );
 }

@@ -1,85 +1,61 @@
-import React, { useState } from 'react';
-import { Popover } from 'react-bootstrap';
-import { BsCCircle, BsSquare, BsStickiesFill } from 'react-icons/bs';
+import React, { useState, useEffect } from "react";
+import { Popover } from "react-bootstrap";
 import { DrawingColors } from "../../utils/DrawingColor";
+import { BsSquare, BsStickiesFill } from "react-icons/bs";
 
-const CustomStickyPopover = ({ setSelectedColor, handleAddNote }) => {
+const CustomStickyPopover = ({
+  setSelectedColor,
+  clickCount,
+  setClickCount,
+}) => {
+  const [popoverVisible, setPopoverVisible] = useState(false); 
 
-  const [selectedShape, setSelectedShape] = useState(null);
+
+  const handleClick = (color) => {
+    if (!clickCount) {
+      setSelectedColor(color);
+      setClickCount(1);
+    }
+  };
 
   return (
     <Popover id="popover-basic">
       <Popover.Body>
-        <div style={{ display: 'flex' }}>
+        <div style={{ padding: "15px 0", borderBottom: "2px solid #e0e0e0" }}>
+          <div
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#00000010",
+              borderRadius: "4px",
+            }}
+          >
+            View templates
+          </div>
+        </div>
+        <div
+          style={{
+            width: "130px",
+            padding: "20px 10px",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "30px",
+          }}
+        >
           {DrawingColors.map((color) => (
             <div
               key={color.color}
-              onClick={() => setSelectedColor(color.color)}
+              onClick={() => handleClick(color.color)}
               style={{
                 backgroundColor: color.color,
-                borderRadius: '50%',
-                width: '24px',
-                height: '24px',
-                margin: '6px',
-                cursor: 'pointer',
-                boxShadow: selectedShape === color.color ? '0 0 0 2px #000' : 'none',
+                width: "40px",
+                height: "40px",
+                cursor: "pointer",
+                border: `1.5px solid ${color.border}`,
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
               title={color.title}
             ></div>
           ))}
-        </div>
-        <div style={{ display: 'flex' }}>
-          <div
-            onClick={() => {
-              handleAddNote(200, 300, 'Rectangle');
-              setSelectedShape('Rectangle');
-            }}
-            style={{
-              flex: 1,
-              padding: '12px',
-              backgroundColor: selectedShape === 'Rectangle' ? DrawingColors.color : 'transparent',
-              borderRadius: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <BsStickiesFill style={{ cursor: 'pointer' }} />
-          </div>
-          <div
-            onClick={() => {
-              handleAddNote(200, 200, 'circle');
-              setSelectedShape('circle');
-            }}
-            style={{
-              flex: 1,
-              padding: '12px',
-              backgroundColor: selectedShape === 'circle' ? DrawingColors.color : 'transparent',
-              borderRadius: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <BsCCircle style={{ cursor: 'pointer' }} />
-          </div>
-          <div
-            onClick={() => {
-              handleAddNote(200, 200, 'square');
-              setSelectedShape('square');
-            }}
-            style={{
-              flex: 1,
-              padding: '12px',
-              backgroundColor: selectedShape === 'square' ? DrawingColors.color : 'transparent',
-              borderRadius: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <BsSquare style={{ cursor: 'pointer' }} />
-          </div>
         </div>
       </Popover.Body>
     </Popover>
